@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTrack - Pollution Reporting</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2e7d32;
+            --primary-dark: #1b5e20;
+            --primary-light: #4caf50;
+            --secondary: #f5f5f5;
+            --accent: #ff9800;
+            --text-dark: #333;
+            --text-light: #fff;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --info: #3498db;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            min-height: 80vh;
+            position: relative;
+        }
+
+        /* Auth Page Styles */
+        #authPage {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            transition: var(--transition);
+            padding: 40px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .eco-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+        }
+
+        .auth-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+        }
+
+        .auth-header p {
+            font-size: 1.1rem;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .auth-form {
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .auth-form h2 {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 42px;
+            color: #777;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+            display: block;
+            margin-top: 15px;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .auth-footer a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        /* Profile Photo Upload */
+        .profile-upload {
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            margin: 0 auto 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            color: #ccc;
+        }
+
+        .profile-avatar:hover {
+            opacity: 0.8;
+        }
+
+        .upload-label {
+            display: block;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .upload-label:hover {
+            text-decoration: underline;
+        }
+
+        /* Main App Styles */
+        #appPage {
+            display: none;
+            width: 100%;
+        }
+
+        .app-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo h2 {
+            font-size: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-info img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .page-title {
+            color: var(--primary-dark);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Report Form Styles */
+        .report-form-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .form-header {
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .form-header h2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-size: 1.4rem;
+        }
+
+        .form-body {
+            padding: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input:focus, 
+        .form-group textarea:focus, 
+        .form-group select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
+        }
+
+        .image-upload {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .image-upload:hover {
+            border-color: var(--primary);
+            background: rgba(46, 125, 50, 0.05);
+        }
+
+        .image-upload i {
+            font-size: 3rem;
+            color: #ccc;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 15px;
+            border-radius: 8px;
+            display: none;
+            object-fit: cover;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Recent Reports */
+        .reports-section {
+            margin-top: 40px;
+        }
+
+        .reports-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reports-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .report-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s;
+            border-left: 4px solid var(--primary);
+        }
+
+        .report-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .report-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-type {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .report-type.pollution { background: var(--danger); }
+        .report-type.deforestation { background: var(--primary); }
+        .report-type.mining { background: var(--warning); }
+        .report-type.other { background: var(--info); }
+
+        .report-date {
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        .report-location {
+            font-weight: 600;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .report-description {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .report-image {
+            width: 100%;
+            max-height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+            display: none;
+        }
+
+        .report-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .reporter-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .reporter-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+
+        .report-status {
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: #f0f0f0;
+        }
+
+        .status-pending { color: var(--warning); }
+        .status-investigation { color: var(--info); }
+        .status-resolved { color: var(--primary); }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 30px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                min-height: auto;
+            }
+            
+            .auth-header h1 {
+                font-size: 2rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+            
+            .report-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .report-footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Auth Page (Login & Signup) -->
+        <div id="authPage">
+            <div class="auth-header">
+                <div class="eco-icon">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <h1>EcoTrack</h1>
+                <p>Report environmental violations and help protect our planet</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form class="auth-form" id="loginForm">
+                <h2>Welcome Back</h2>
+                <div class="input-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="btn">Login to EcoTrack</button>
+                <div class="auth-footer">
+                    <p>Don't have an account? <a href="#" id="showSignup">Sign Up</a></p>
+                </div>
+            </form>
+            
+            <!-- Signup Form -->
+            <form class="auth-form hidden" id="signupForm">
+                <h2>Create Account</h2>
+                <div class="profile-upload">
+                    <div id="profilePreview" class="profile-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <input type="file" id="profilePhoto" accept="image/*" style="display: none;">
+                    <label for="profilePhoto" class="upload-label">Upload Profile Photo</label>
+                </div>
+                <div class="input-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your full name" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" placeholder="Enter your email" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupPassword">Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a password" required>
+                </div>
+                <div class="input-group">
+                    <label for="signupConfirm">Confirm Password</label>
+                    <input type="password" id="signupConfirm" placeholder="Confirm your password" required>
+                </div>
+                <button type="submit" class="btn">Create Account</button>
+                <div class="auth-footer">
+                    <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Main Application -->
+        <div id="appPage">
+            <!-- App Header -->
+            <div class="app-header">
+                <div class="logo">
+                    <i class="fas fa-globe-americas"></i>
+                    <h2>EcoTrack</h2>
+                </div>
+                <div class="user-info">
+                    <img id="userAvatar" src="" alt="User">
+                    <span id="userName"></span>
+                    <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i></a>
+                </div>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="main-content">
+                <h1 class="page-title"><i class="fas fa-flag"></i> Report Environmental Violation</h1>
+                
+                <!-- Report Form -->
+                <div class="report-form-container">
+                    <div class="form-header">
+                        <h2><i class="fas fa-exclamation-triangle"></i> Report Details</h2>
+                    </div>
+                    <div class="form-body">
+                        <div class="form-group">
+                            <label for="violationType">Violation Type *</label>
+                            <select id="violationType" required>
+                                <option value="">Select violation type</option>
+                                <option value="pollution">Air/Water Pollution</option>
+                                <option value="deforestation">Illegal Deforestation</option>
+                                <option value="mining">Illegal Mining</option>
+                                <option value="waste">Illegal Waste Dumping</option>
+                                <option value="other">Other Environmental Violation</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="violationLocation">Location *</label>
+                            <input type="text" id="violationLocation" placeholder="Enter exact location/address" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="violationDescription">Description *</label>
+                            <textarea id="violationDescription" placeholder="Describe the violation in detail..." required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Evidence (Photos)</label>
+                            <div class="image-upload" id="imageUpload">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Click to upload or drag and drop</p>
+                                <p>JPG, PNG up to 5MB</p>
+                                <img id="imagePreview" class="image-preview" alt="Preview">
+                            </div>
+                            <input type="file" id="evidenceFile" accept="image/*" style="display: none;">
+                        </div>
+                        
+                        <div class="btn-container">
+                            <button class="btn" id="submitReportBtn"><i class="fas fa-paper-plane"></i> Submit Report</button>
+                            <button class="btn btn-outline" id="resetBtn"><i class="fas fa-times"></i> Reset Form</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Reports Section -->
+                <div class="reports-section">
+                    <h2><i class="fas fa-history"></i> Recent Reports</h2>
+                    <div class="reports-gallery" id="reportsGallery">
+                        <!-- Reports will appear here after submission -->
+                        <div class="empty-state">
+                            <p>No reports submitted yet. Be the first to report an environmental violation!</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer">
+                    <p>© 2023 EcoTrack | Environmental Violation Reporting System | Together for a greener planet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const authPage = document.getElementById('authPage');
+            const appPage = document.getElementById('appPage');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const showSignup = document.getElementById('showSignup');
+            const showLogin = document.getElementById('showLogin');
+            const logoutBtn = document.getElementById('logoutBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const userName = document.getElementById('userName');
+            const userAvatar = document.getElementById('userAvatar');
+            const reportsGallery = document.getElementById('reportsGallery');
+            const submitReportBtn = document.getElementById('submitReportBtn');
+            const profilePreview = document.getElementById('profilePreview');
+            const profilePhoto = document.getElementById('profilePhoto');
+            
+            // Current user data
+            let currentUser = null;
+            let userReports = [];
+            
+            // Toggle between login and signup forms
+            showSignup.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.classList.add('hidden');
+                signupForm.classList.remove('hidden');
+            });
+            
+            showLogin.addEventListener('click', function(e) {
+                e.preventDefault();
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
+            
+            // Profile photo upload during signup
+            profilePhoto.addEventListener('change', function(e) {
+                if(e.target.files && e.target.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        // Update preview during signup
+                        profilePreview.innerHTML = '';
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.width = '100%';
+                        img.style.height = '100%';
+                        img.style.borderRadius = '50%';
+                        img.style.objectFit = 'cover';
+                        profilePreview.appendChild(img);
+                    }
+                    
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+            
+            // Login functionality
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const email = document.getElementById('loginEmail').value;
+                const password = document.getElementById('loginPassword').value;
+                
+                // Simple validation
+                if(email && password) {
+                    // Set user data
+                    const name = email.split('@')[0];
+                    currentUser = {
+                        name: name.charAt(0).toUpperCase() + name.slice(1),
+                        email: email,
+                        avatar: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                    };
+                    
+                    // Update UI
+                    userName.textContent = currentUser.name;
+                    userAvatar.src = currentUser.avatar;
+                    
+                    // Switch to app view
+                    authPage.style.display = 'none';
+                    appPage.style.display = 'block';
+                }
+            });
+            
+            // Signup functionality
+            signupForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('signupName').value;
+                const email = document.getElementById('signupEmail').value;
+                const password = document.getElementById('signupPassword').value;
+                const confirm = document.getElementById('signupConfirm').value;
+                
+                // Simple validation
+                if(password !== confirm) {
+                    alert('Passwords do not match!');
+                    return;
+                }
+                
+                if(name && email && password) {
+                    // Set user data
+                    currentUser = {
+                        name: name,
+                        email: email,
+                        avatar: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                    };
+                    
+                    // If profile photo uploaded during signup
+                    if(profilePhoto.files && profilePhoto.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            currentUser.avatar = e.target.result;
+                            userAvatar.src = currentUser.avatar;
+                        }
+                        reader.readAsDataURL(profilePhoto.files[0]);
+                    }
+                    
+                    // Update UI
+                    userName.textContent = currentUser.name;
+                    userAvatar.src = currentUser.avatar;
+                    
+                    // Switch to app view
+                    authPage.style.display = 'none';
+                    appPage.style.display = 'block';
+                }
+            });
+            
+            // Logout functionality
+            logoutBtn.addEventListener('click', function() {
+                appPage.style.display = 'none';
+                authPage.style.display = 'block';
+                // Clear forms
+                loginForm.reset();
+                signupForm.reset();
+                // Switch to login form
+                signupForm.classList.add('hidden');
+                loginForm.classList.remove('hidden');
+            });
+            
+            // Reset form button
+            resetBtn.addEventListener('click', function() {
+                document.getElementById('violationType').value = '';
+                document.getElementById('violationLocation').value = '';
+                document.getElementById('violationDescription').value = '';
+                document.getElementById('evidenceFile').value = '';
+                document.getElementById('imagePreview').style.display = 'none';
+                document.getElementById('imageUpload').querySelector('i').style.display = 'block';
+                document.getElementById('imageUpload').querySelector('p').style.display = 'block';
+            });
+            
+            // Image upload functionality for evidence
+            const imageUpload = document.getElementById('imageUpload');
+            const evidenceFile = document.getElementById('evidenceFile');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            imageUpload.addEventListener('click', function() {
+                evidenceFile.click();
+            });
+            
+            evidenceFile.addEventListener('change', function(e) {
+                if(e.target.files && e.target.files[0]) {
+                    const file = e.target.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        imageUpload.querySelector('i').style.display = 'none';
+                        imageUpload.querySelector('p').style.display = 'none';
+                    }
+                    
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // Submit report functionality
+            submitReportBtn.addEventListener('click', function() {
+                const violationType = document.getElementById('violationType').value;
+                const location = document.getElementById('violationLocation').value;
+                const description = document.getElementById('violationDescription').value;
+                const evidence = imagePreview.src || '';
+                
+                if(!violationType || !location || !description) {
+                    alert('Please fill in all required fields (marked with *)');
+                    return;
+                }
+                
+                // Create report object
+                const report = {
+                    id: Date.now(),
+                    type: violationType,
+                    location: location,
+                    description: description,
+                    evidence: evidence,
+                    reporter: currentUser.name,
+                    reporterAvatar: currentUser.avatar,
+                    status: 'Pending Review',
+                    timestamp: new Date().toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })
+                };
+                
+                // Add report to gallery
+                addReportToGallery(report);
+                
+                // Store report
+                userReports.unshift(report);
+                
+                // Reset form
+                resetBtn.click();
+                
+                // Show success message
+                showNotification(`Violation reported successfully! Thank you for your contribution.`);
+            });
+            
+            // Function to add report to gallery
+            function addReportToGallery(report) {
+                // Remove empty state if it exists
+                if(reportsGallery.querySelector('.empty-state')) {
+                    reportsGallery.innerHTML = '';
+                }
+                
+                const reportCard = document.createElement('div');
+                reportCard.className = 'report-card';
+                
+                // Get type display name
+                const typeNames = {
+                    'pollution': 'Pollution',
+                    'deforestation': 'Deforestation',
+                    'mining': 'Illegal Mining',
+                    'waste': 'Illegal Waste Dumping',
+                    'other': 'Other Violation'
+                };
+                
+                // Get status display
+                const statusDisplay = {
+                    'Pending Review': 'status-pending',
+                    'Under Investigation': 'status-investigation',
+                    'Resolved': 'status-resolved'
+                };
+                
+                reportCard.innerHTML = `
+                    ${report.evidence ? `<img src="${report.evidence}" alt="${report.type}" class="report-image">` : ''}
+                    <div class="report-content">
+                        <div class="report-header">
+                            <span class="report-type ${report.type}">${typeNames[report.type] || report.type}</span>
+                            <span class="report-date">${report.timestamp}</span>
+                        </div>
+                        <div class="report-location">
+                            <i class="fas fa-map-marker-alt"></i> ${report.location}
+                        </div>
+                        <p class="report-description">${report.description}</p>
+                        <div class="report-footer">
+                            <div class="reporter-info">
+                                <img src="${report.reporterAvatar}" alt="${report.reporter}" class="reporter-avatar">
+                                <span>${report.reporter}</span>
+                            </div>
+                            <span class="report-status ${statusDisplay[report.status]}">${report.status}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // If evidence exists, show the image
+                if(report.evidence) {
+                    reportCard.querySelector('.report-image').style.display = 'block';
+                }
+                
+                reportsGallery.prepend(reportCard);
+            }
+            
+            // Show notification function
+            function showNotification(message) {
+                const notification = document.createElement('div');
+                notification.style.position = 'fixed';
+                notification.style.bottom = '20px';
+                notification.style.right = '20px';
+                notification.style.backgroundColor = 'var(--primary)';
+                notification.style.color = 'white';
+                notification.style.padding = '15px 25px';
+                notification.style.borderRadius = '8px';
+                notification.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+                notification.style.zIndex = '1000';
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(20px)';
+                notification.style.transition = 'all 0.3s ease';
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                // Animate in
+                setTimeout(() => {
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateY(0)';
+                }, 10);
+                
+                // Remove after 3 seconds
+                setTimeout(() => {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        document.body.removeChild(notification);
+                    }, 300);
+                }, 3000);
+            }
+            
+            // Drag and drop for image upload
+            imageUpload.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = 'var(--primary)';
+                this.style.backgroundColor = 'rgba(46, 125, 50, 0.1)';
+            });
+            
+            imageUpload.addEventListener('dragleave', function() {
+                this.style.borderColor = '#ddd';
+                this.style.backgroundColor = '';
+            });
+            
+            imageUpload.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ddd';
+                this.style.backgroundColor = '';
+                
+                if(e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    evidenceFile.files = e.dataTransfer.files;
+                    const changeEvent = new Event('change');
+                    evidenceFile.dispatchEvent(changeEvent);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
