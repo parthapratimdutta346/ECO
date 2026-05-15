@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Student Placement Predictor</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+
+:root{
+  --bg:#f4f6f9;
+  --surface:#ffffff;
+  --card:#ffffff;
+  --border:#dbe2ea;
+
+  --accent:#2563eb;
+  --accent2:#1e40af;
+
+  --good:#16a34a;
+  --moderate:#d97706;
+  --poor:#dc2626;
+
+  --text:#1e293b;
+  --muted:#64748b;
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'DM Mono', monospace;
+  min-height:100vh;
+}
+
+.wrap{
+  max-width:980px;
+  margin:0 auto;
+  padding:40px 20px 80px;
+}
+
+header{
+  text-align:center;
+  margin-bottom:40px;
+}
+
+h1{
+  font-family:'Syne', sans-serif;
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:10px;
+  line-height:1.1;
+}
+
+.sub{
+  color:var(--muted);
+  font-size:13px;
+  max-width:550px;
+  margin:0 auto;
+  line-height:1.8;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:28px;
+  margin-bottom:20px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+.sec{
+  font-family:'Syne', sans-serif;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:#334155;
+  margin-bottom:22px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.sec::after{
+  content:'';
+  flex:1;
+  height:1px;
+  background:var(--border);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+label{
+  font-size:10px;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+input[type=number],
+select{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--text);
+  font-family:'DM Mono', monospace;
+  font-size:14px;
+  padding:11px 13px;
+  width:100%;
+  outline:none;
+  transition:border-color .2s, box-shadow .2s;
+  appearance:none;
+}
+
+input[type=number]:focus,
+select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(37,99,235,.1);
+}
+
+.rw{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+input[type=range]{
+  flex:1;
+  appearance:none;
+  height:4px;
+  background:#dbe2ea;
+  border-radius:2px;
+  outline:none;
+  cursor:pointer;
+}
+
+input[type=range]::-webkit-slider-thumb{
+  appearance:none;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--accent);
+  cursor:pointer;
+}
+
+.rv{
+  color:var(--accent);
+  min-width:22px;
+  font-size:15px;
+  font-weight:bold;
+}
+
+.err{
+  display:none;
+  background:rgba(220,38,38,.08);
+  border:1px solid rgba(220,38,38,.2);
+  color:#dc2626;
+  border-radius:6px;
+  padding:12px 16px;
+  font-size:12px;
+  margin-bottom:14px;
+  text-align:center;
+}
+
+.pbtn{
+  display:block;
+  width:100%;
+  max-width:340px;
+  margin:0 auto;
+  background:var(--accent);
+  border:none;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+  font-family:'Syne', sans-serif;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:1px;
+  padding:16px 36px;
+  text-transform:uppercase;
+  transition:0.2s ease;
+}
+
+.pbtn:hover{
+  background:var(--accent2);
+  transform:translateY(-1px);
+}
+
+#results{
+  display:none;
+}
+
+.rg{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-bottom:20px;
+}
+
+@media(max-width:580px){
+  .rg{
+    grid-template-columns:1fr;
+  }
+
+  .card{
+    padding:18px 14px;
+  }
+}
+
+.rc{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:28px;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+
+.rl{
+  font-size:10px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+
+.rv2{
+  font-family:'Syne', sans-serif;
+  font-size:2rem;
+  font-weight:800;
+  margin-bottom:8px;
+}
+
+.rs{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.7;
+}
+
+.cp{ color:#2563eb; }
+.cu{ color:#dc2626; }
+
+.cg{ color:#16a34a; }
+.cm{ color:#d97706; }
+.cpoor{ color:#dc2626; }
+
+.pw{
+  margin-top:14px;
+  background:#e2e8f0;
+  border-radius:4px;
+  height:6px;
+  overflow:hidden;
+}
+
+.pf{
+  height:100%;
+  border-radius:4px;
+  background:#2563eb;
+  width:0%;
+  transition:width 1.2s cubic-bezier(.4,0,.2,1);
+}
+
+.scl{
+  font-family:'Syne', sans-serif;
+  text-align:center;
+  margin-top:16px;
+  font-size:12px;
+  color:var(--muted);
+}
+
+.scl span{
+  font-size:1.8rem;
+  font-weight:800;
+  color:var(--accent);
+}
+
+.bi{
+  display:flex;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid var(--border);
+  font-size:12px;
+  gap:12px;
+}
+
+.bi:last-child{
+  border-bottom:none;
+}
+
+.bn{
+  color:var(--muted);
+  min-width:130px;
+}
+
+.bbw{
+  flex:1;
+  background:#e2e8f0;
+  border-radius:2px;
+  height:5px;
+  overflow:hidden;
+}
+
+.bb{
+  height:100%;
+  border-radius:2px;
+  background:#2563eb;
+}
+
+.bs{
+  color:var(--accent);
+  min-width:40px;
+  text-align:right;
+  font-size:11px;
+}
+
+.rbtn{
+  display:block;
+  margin:24px auto 0;
+  background:white;
+  border:1px solid var(--border);
+  border-radius:6px;
+  color:var(--muted);
+  cursor:pointer;
+  font-family:'DM Mono', monospace;
+  font-size:11px;
+  letter-spacing:1px;
+  padding:10px 28px;
+  text-transform:uppercase;
+}
+
+.rbtn:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrap">
+
+<header>
+  <h1>Student Placement Predictor</h1>
+  <p class="sub">
+    Enter academic and skill details to evaluate placement readiness and overall performance.
+  </p>
+</header>
+
+<!-- Academic -->
+<div class="card">
+
+  <div class="sec">Academic Profile</div>
+
+  <div class="grid">
+
+    <div class="field">
+      <label>CGPA (0–10)</label>
+      <input type="number" id="cgpa" min="0" max="10" step="0.01" placeholder="e.g. 7.80" />
+    </div>
+
+    <div class="field">
+      <label>10th Mark (%)</label>
+      <input type="number" id="tenth" min="0" max="100" step="0.1" placeholder="e.g. 75.3" />
+    </div>
+
+    <div class="field">
+      <label>12th Mark (%)</label>
+      <input type="number" id="twelfth" min="0" max="100" step="0.1" placeholder="e.g. 69.7" />
+    </div>
+
+    <div class="field">
+      <label>Attendance (%)</label>
+      <input type="number" id="attendance" min="0" max="100" step="0.1" placeholder="e.g. 85.0" />
+    </div>
+
+    <div class="field">
+      <label>Backlogs</label>
+      <input type="number" id="backlogs" min="0" max="20" step="1" placeholder="0" />
+    </div>
+
+    <div class="field">
+      <label>Branch</label>
+      <select id="branch">
+        <option>CSE</option>
+        <option>ECE</option>
+        <option>IT</option>
+        <option>MECH</option>
+        <option>CIVIL</option>
+        <option>EEE</option>
+        <option>OTHER</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Gender</label>
+      <select id="gender">
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
+<!-- Skills -->
+<div class="card">
+
+  <div class="sec">Skills & Activities</div>
+
+  <div class="grid">
+
+    <div class="field">
+      <label>Technical Skill (0–5)</label>
+
+      <div class="rw">
+        <input type="range" id="technical" min="0" max="5" step="1" value="3"
+        oninput="document.getElementById('tv').textContent=this.value" />
+
+        <span class="rv" id="tv">3</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Communication (0–5)</label>
+
+      <div class="rw">
+        <input type="range" id="communication" min="0" max="5" step="1" value="3"
+        oninput="document.getElementById('cv').textContent=this.value" />
+
+        <span class="rv" id="cv">3</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>Aptitude (0–100)</label>
+      <input type="number" id="aptitude" min="0" max="100" step="1" placeholder="e.g. 70" />
+    </div>
+
+    <div class="field">
+      <label>Projects Completed</label>
+      <input type="number" id="projects" min="0" max="20" step="1" placeholder="e.g. 3" />
+    </div>
+
+    <div class="field">
+      <label>Internships</label>
+      <input type="number" id="internships" min="0" max="10" step="1" placeholder="e.g. 1" />
+    </div>
+
+    <div class="field">
+      <label>Certifications</label>
+      <input type="number" id="certifications" min="0" max="20" step="1" placeholder="e.g. 2" />
+    </div>
+
+    <div class="field">
+      <label>Hackathons</label>
+      <input type="number" id="hackathons" min="0" max="20" step="1" placeholder="e.g. 1" />
+    </div>
+
+    <div class="field">
+      <label>Extracurriculars</label>
+
+      <select id="extra">
+        <option value="Low">Low</option>
+        <option value="Medium" selected>Medium</option>
+        <option value="High">High</option>
+      </select>
+    </div>
+
+  </div>
+</div>
+
+<div class="err" id="errMsg">
+  Please fill in all fields before predicting.
+</div>
+
+<div style="text-align:center;margin-bottom:40px">
+  <button class="pbtn" onclick="runPrediction()">
+    Predict Outcome
+  </button>
+</div>
+
+<!-- Results -->
+<div id="results">
+
+  <div class="rg">
+
+    <div class="rc">
+      <div class="rl">Placement Status</div>
+
+      <div class="rv2" id="rP">—</div>
+
+      <div class="rs" id="rPsub"></div>
+
+      <div class="pw">
+        <div class="pf" id="pFill"></div>
+      </div>
+
+      <div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:right" id="rPpct"></div>
+    </div>
+
+    <div class="rc">
+
+      <div class="rl">Performance Category</div>
+
+      <div class="rv2" id="rPerf">—</div>
+
+      <div class="rs" id="rPerfSub"></div>
+
+      <div class="scl">
+        Score: <span id="rScore">0</span>/29
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Score Breakdown</div>
+    <div id="bList"></div>
+  </div>
+
+  <div class="card">
+    <div class="sec">Derived Feature Scores</div>
+    <div id="fList"></div>
+  </div>
+
+  <div style="text-align:center">
+    <button class="rbtn" onclick="resetAll()">
+      Predict Again
+    </button>
+  </div>
+
+</div>
+
+</div>
+
+<script>
+
+function g(id){
+  return document.getElementById(id);
+}
+
+function runPrediction(){
+
+  g('errMsg').style.display='none';
+
+  var cgpa=parseFloat(g('cgpa').value),
+      tenth=parseFloat(g('tenth').value),
+      twelfth=parseFloat(g('twelfth').value),
+      attendance=parseFloat(g('attendance').value),
+      backlogs=parseInt(g('backlogs').value),
+      tech=parseInt(g('technical').value),
+      comm=parseInt(g('communication').value),
+      apt=parseInt(g('aptitude').value),
+      proj=parseInt(g('projects').value),
+      intern=parseInt(g('internships').value),
+      cert=parseInt(g('certifications').value),
+      hack=parseInt(g('hackathons').value),
+      extra=g('extra').value;
+
+  var bad=[];
+
+  if(isNaN(cgpa)) bad.push('CGPA');
+  if(isNaN(tenth)) bad.push('10th');
+  if(isNaN(twelfth)) bad.push('12th');
+  if(isNaN(attendance)) bad.push('Attendance');
+  if(isNaN(backlogs)) bad.push('Backlogs');
+  if(isNaN(apt)) bad.push('Aptitude');
+  if(isNaN(proj)) bad.push('Projects');
+  if(isNaN(intern)) bad.push('Internships');
+  if(isNaN(cert)) bad.push('Certifications');
+  if(isNaN(hack)) bad.push('Hackathons');
+
+  if(bad.length){
+
+    g('errMsg').textContent='Fill in: '+bad.join(', ');
+    g('errMsg').style.display='block';
+
+    return;
+  }
+
+  var S={};
+
+  S.CGPA=cgpa>=8.5?5:cgpa>=7.5?4:cgpa>=6.5?3:1;
+  S.Attendance=attendance>=85?3:attendance>=75?2:1;
+  S.Backlogs=backlogs===0?4:backlogs===1?2:0;
+  S.Certifications=cert>=2?3:cert===1?2:1;
+  S.Projects=proj>=2?3:proj===1?2:1;
+  S['Tech Skill']=tech>0?2:1;
+  S.Internships=intern>0?2:1;
+  S.Aptitude=apt>=70?3:apt>=50?2:1;
+  S.Communication=comm>=4?3:comm>=2?2:1;
+
+  var total=Object.values(S).reduce((a,b)=>a+b,0);
+
+  var cat=total>=22?'GOOD':
+          total>=15?'MODERATE':
+          'POOR';
+
+  var ps=0;
+
+  ps += cgpa>=8.5?28:cgpa>=7.5?22:cgpa>=6.5?14:cgpa>=5.5?7:2;
+  ps += attendance>=85?16:attendance>=75?10:attendance>=65?5:1;
+  ps += backlogs===0?14:backlogs===1?6:0;
+  ps += apt>=80?12:apt>=65?8:apt>=50?4:1;
+  ps += intern>=2?8:intern===1?5:0;
+  ps += proj>=3?6:proj>=1?3:0;
+  ps += tech>=4?5:tech>=2?3:tech>=1?1:0;
+  ps += cert>=3?4:cert>=1?2:0;
+  ps += comm>=4?4:comm>=2?2:0;
+
+  var avgM=(tenth+twelfth)/2;
+
+  ps += avgM>=80?6:avgM>=65?3:0;
+  ps += hack>=2?3:hack===1?1:0;
+  ps += extra==='High'?2:extra==='Medium'?1:0;
+
+  var raw=ps/108;
+
+  var prob=1/(1+Math.exp(-8*(raw-0.42)));
+
+  prob=Math.min(0.99,Math.max(0.01,prob));
+
+  var placed=prob>=0.5;
+
+  var exN={Low:0,Medium:1,High:2};
+
+  var acScore=(cgpa/10*100+tenth+twelfth)/3;
+
+  var exScore=proj+intern+hack+cert+exN[extra];
+
+  var skScore=tech+comm+(apt/100*5);
+
+  var abRatio=attendance/(backlogs+1);
+
+  var rP=g('rP');
+
+  rP.textContent=placed?'PLACED':'NOT PLACED';
+
+  rP.className='rv2 '+(placed?'cp':'cu');
+
+  g('rPsub').textContent='Probability: '+(prob*100).toFixed(1)+'%';
+
+  g('rPpct').textContent=(prob*100).toFixed(1)+'%';
+
+  setTimeout(()=>{
+    g('pFill').style.width=(prob*100).toFixed(1)+'%';
+  },80);
+
+  var rPf=g('rPerf');
+
+  rPf.textContent=cat;
+
+  rPf.className='rv2 '+(
+    cat==='GOOD'?'cg':
+    cat==='MODERATE'?'cm':
+    'cpoor'
+  );
+
+  g('rPerfSub').textContent={
+    GOOD:'Strong overall profile.',
+    MODERATE:'Good profile with scope for improvement.',
+    POOR:'Several areas need improvement.'
+  }[cat];
+
+  g('rScore').textContent=total;
+
+  var maxMap={
+    CGPA:5,
+    Attendance:3,
+    Backlogs:4,
+    Certifications:3,
+    Projects:3,
+    'Tech Skill':2,
+    Internships:2,
+    Aptitude:3,
+    Communication:3
+  };
+
+  var bEl=g('bList');
+
+  bEl.innerHTML='';
+
+  Object.keys(S).forEach(function(k){
+
+    var v=S[k];
+
+    var mx=maxMap[k];
+
+    var pct=(v/mx*100).toFixed(0);
+
+    bEl.innerHTML += `
+      <div class="bi">
+        <span class="bn">${k}</span>
+
+        <div class="bbw">
+          <div class="bb" style="width:${pct}%"></div>
+        </div>
+
+        <span class="bs">${v}/${mx}</span>
+      </div>
+    `;
+  });
+
+  var fEl=g('fList');
+
+  fEl.innerHTML='';
+
+  [
+    {n:'Academic Score',v:acScore.toFixed(1),max:100},
+    {n:'Extra-curricular Score',v:exScore,max:20},
+    {n:'Skill Score',v:skScore.toFixed(2),max:15},
+    {n:'Attendance Ratio',v:abRatio.toFixed(2),max:100}
+  ]
+
+  .forEach(function(f){
+
+    var pct=Math.min(
+      100,
+      (parseFloat(f.v)/f.max*100)
+    ).toFixed(0);
+
+    fEl.innerHTML += `
+      <div class="bi">
+        <span class="bn">${f.n}</span>
+
+        <div class="bbw">
+          <div class="bb" style="width:${pct}%"></div>
+        </div>
+
+        <span class="bs">${f.v}</span>
+      </div>
+    `;
+  });
+
+  g('results').style.display='block';
+
+  setTimeout(()=>{
+    g('results').scrollIntoView({
+      behavior:'smooth',
+      block:'start'
+    });
+  },100);
+}
+
+function resetAll(){
+
+  [
+    'cgpa',
+    'tenth',
+    'twelfth',
+    'attendance',
+    'backlogs',
+    'aptitude',
+    'projects',
+    'internships',
+    'certifications',
+    'hackathons'
+  ]
+
+  .forEach(function(id){
+    g(id).value='';
+  });
+
+  g('technical').value=3;
+  g('tv').textContent='3';
+
+  g('communication').value=3;
+  g('cv').textContent='3';
+
+  g('branch').selectedIndex=0;
+  g('gender').selectedIndex=0;
+  g('extra').selectedIndex=1;
+
+  g('results').style.display='none';
+
+  g('errMsg').style.display='none';
+
+  window.scrollTo({
+    top:0,
+    behavior:'smooth'
+  });
+}
+
+</script>
+
+</body>
+</html>
